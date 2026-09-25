@@ -2,9 +2,34 @@
 
 [English](README.md)
 
-`gh-harness` は GitHub CLI (`gh`) の実行前に対象リポジトリと必要な操作権限を検査する .NET 10 製のラッパーです。macOS、Windows、Linux で `dotnet tool` として利用できます。許可されたコマンドは元の引数、標準入出力、終了コードを保って実体の `gh` に渡します。
+`gh-harness` は GitHub CLI (`gh`) の実行前に対象リポジトリと必要な操作権限を検査する .NET 10 製のラッパーです。macOS、Windows、Linux で `dotnet tool` または `gh` 拡張コマンドとして利用できます。許可されたコマンドは元の引数、標準入出力、終了コードを保って実体の `gh` に渡します。
 
-## インストール
+## `gh` 拡張コマンドとしてインストール
+
+GitHub CLI をインストールしてください。実行ファイルを含む Release が公開された後は、GitHub から拡張コマンドをインストールできます。
+
+```sh
+gh extension install takuma-komatsu/gh-harness
+```
+
+Release の実行ファイルは .NET ランタイムを同梱するため、この方法では .NET SDK やランタイムの別途インストールは不要です。Release ワークフローは Windows、macOS、Linux の x64 と ARM64 向けにビルドします。最初の対応 Release が公開されるまでは、macOS と Linux ではローカル拡張コマンド、Windows では .NET ツールを使用してください。
+
+macOS と Linux のローカルチェックアウトでは、.NET 10 SDK をインストールしてから次を実行します。
+
+```sh
+gh extension install .
+```
+
+通常の `gh` の引数を `harness` の後に指定します。
+
+```sh
+gh harness --explain pr view -R acme-app/release-tools
+gh harness pr view -R acme-app/release-tools
+```
+
+macOS と Linux のローカル拡張コマンドは、`dotnet run` でチェックアウト内のプロジェクトを実行します。初回にビルドするため、.NET 10 SDK とチェックアウトが必要です。通常のビルド出力は抑制しますが、SDK の警告やエラーは表示される場合があります。拡張コマンドのインストールに `dotnet tool` は不要です。`gh harness` による検査は、このサブコマンド経由の実行にだけ適用されます。
+
+## .NET ツールとしてインストール
 
 .NET 10 SDK と GitHub CLI をインストールし、両方が PATH から使える状態にしてください。このリポジトリからローカルパッケージを作る場合:
 
@@ -19,11 +44,15 @@ dotnet tool install --global gh-harness --version 0.1.0 --add-source ./artifacts
 alias gh='gh-harness'
 ```
 
+このエイリアスを設定したシェルから拡張コマンドを呼ぶ場合は `command gh harness ...` を使います。
+
 PowerShell では `$PROFILE` に次を追加します。
 
 ```powershell
 function gh { & gh-harness @args }
 ```
+
+Windows では、`gh.exe harness ...` でこの関数を回避して拡張コマンドを呼び出せます。
 
 `gh-harness` は PATH 上の実体 `gh` を絶対パスで起動します。エイリアスはシェル内だけで有効です。実体 `gh`、別の GitHub API クライアント、スクリプト内の直接呼び出しを強制的に遮断するセキュリティ境界ではありません。
 

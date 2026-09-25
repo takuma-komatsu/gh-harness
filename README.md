@@ -2,9 +2,34 @@
 
 [日本語](README-ja.md)
 
-`gh-harness` is a .NET 10 wrapper for the GitHub CLI (`gh`). Before running a command, it checks which repository the command targets and whether your policy grants the required permissions. Allowed commands are passed to the real `gh` with their arguments, standard streams, and exit codes intact. It runs as a `dotnet tool` on macOS, Windows, and Linux.
+`gh-harness` is a .NET 10 wrapper for the GitHub CLI (`gh`). Before running a command, it checks which repository the command targets and whether your policy grants the required permissions. Allowed commands are passed to the real `gh` with their arguments, standard streams, and exit codes intact. It runs as a `dotnet tool` or a `gh` extension on macOS, Windows, and Linux.
 
-## Install
+## Install as a `gh` extension
+
+Install GitHub CLI. To install the extension from GitHub after a release containing binaries is published:
+
+```sh
+gh extension install takuma-komatsu/gh-harness
+```
+
+The release assets are self-contained executables, so this installation does not need the .NET SDK or runtime. The release workflow builds binaries for Windows, macOS, and Linux on x64 and ARM64. Until the first such release is published, use the local extension on macOS/Linux or the .NET tool on Windows.
+
+For a local checkout on macOS or Linux, install the .NET 10 SDK and run:
+
+```sh
+gh extension install .
+```
+
+Run guarded commands with `gh harness`, passing the usual `gh` arguments after `harness`:
+
+```sh
+gh harness --explain pr view -R acme-app/release-tools
+gh harness pr view -R acme-app/release-tools
+```
+
+The local macOS/Linux extension runs the project from its source checkout with `dotnet run`. Its first invocation builds the project, so the .NET 10 SDK and checkout must remain available. Routine build output is suppressed, but SDK warnings and errors may still appear. Installing the extension does not require installing the `dotnet tool`. `gh harness` guards only commands invoked through that subcommand; other `gh` commands continue to run normally.
+
+## Install as a .NET tool
 
 Install the .NET 10 SDK and GitHub CLI, and make sure both are on your `PATH`. To build and install a local package from this repository:
 
@@ -19,11 +44,15 @@ To use the wrapper in place of `gh` in an interactive bash or zsh shell, add thi
 alias gh='gh-harness'
 ```
 
+With this alias in place, use `command gh harness ...` to invoke the extension.
+
 For PowerShell, add this to `$PROFILE`:
 
 ```powershell
 function gh { & gh-harness @args }
 ```
+
+On Windows, `gh.exe harness ...` bypasses this function and invokes the extension.
 
 The wrapper launches the real `gh` from `PATH` by absolute path. A shell alias only affects that shell: it cannot prevent someone from calling the real `gh`, another GitHub API client, or a script directly. Treat `gh-harness` as a command guard, not a security boundary.
 

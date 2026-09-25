@@ -38,3 +38,14 @@ jobs:
           $toolName = if ($IsWindows) { 'gh-harness.exe' } else { 'gh-harness' }
           & (Join-Path $toolDirectory $toolName) --explain help
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install and smoke test released gh extension
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install takuma-komatsu/gh-harness --pin v0.1.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh harness --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh harness --explain help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

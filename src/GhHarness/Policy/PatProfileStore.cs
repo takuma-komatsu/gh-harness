@@ -347,6 +347,7 @@ public sealed class CredentialBinding
         if (pinnedToken is not null)
             foreach (var (name, value) in PinToken(pinnedToken))
                 if (value is null) start.Environment.Remove(name); else start.Environment[name] = value;
+        start.Environment[GhProcess.RecursionGuardEnvironmentVariable] = "1";
         foreach (var argument in arguments) start.ArgumentList.Add(argument);
 
         using var process = new Process { StartInfo = start };

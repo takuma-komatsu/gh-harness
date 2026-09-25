@@ -6,13 +6,13 @@
 
 ## Install as a `gh` extension
 
-Install GitHub CLI. To install the extension from GitHub after a release containing binaries is published:
+Install GitHub CLI, then install the extension from GitHub:
 
 ```sh
 gh extension install takuma-komatsu/gh-harness
 ```
 
-The release assets are self-contained executables, so this installation does not need the .NET SDK or runtime. The release workflow builds binaries for Windows, macOS, and Linux on x64 and ARM64. Until the first such release is published, use the local extension on macOS/Linux or the .NET tool on Windows.
+The release assets are self-contained executables, so this installation does not need the .NET SDK or runtime. The release workflow builds binaries for Windows, macOS, and Linux on x64 and ARM64.
 
 For a local checkout on macOS or Linux, install the .NET 10 SDK and run:
 
@@ -35,7 +35,7 @@ Install the .NET 10 SDK and GitHub CLI, and make sure both are on your `PATH`. T
 
 ```sh
 dotnet pack src/GhHarness/GhHarness.csproj -c Release -o ./artifacts
-dotnet tool install --global gh-harness --version 0.1.0 --add-source ./artifacts
+dotnet tool install --global gh-harness --version 0.1.1 --add-source ./artifacts
 ```
 
 To use the wrapper in place of `gh` in an interactive bash or zsh shell, add this to your shell startup file:
@@ -55,6 +55,7 @@ function gh { & gh-harness @args }
 On Windows, `gh.exe harness ...` bypasses this function and invokes the extension.
 
 The wrapper launches the real `gh` from `PATH` by absolute path. A shell alias only affects that shell: it cannot prevent someone from calling the real `gh`, another GitHub API client, or a script directly. Treat `gh-harness` as a command guard, not a security boundary.
+If the `gh` found on `PATH` invokes `gh-harness` again, the wrapper stops recursive execution.
 
 For `gh api`, the permission check covers the first URL supplied. If GitHub redirects the request to a different repository and the real `gh api` follows that redirect, the destination is not checked again. See the [limitations in the permission matrix](docs/permission-matrix.md#current-scope-and-adding-support) for details and examples.
 

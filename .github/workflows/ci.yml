@@ -33,7 +33,7 @@ jobs:
         run: |
           $packageDirectory = Join-Path $env:RUNNER_TEMP 'gh-harness-pack'
           $toolDirectory = Join-Path $env:RUNNER_TEMP 'gh-harness-tool'
-          dotnet tool install gh-harness --version 0.1.0 --tool-path $toolDirectory --add-source $packageDirectory --ignore-failed-sources
+          dotnet tool install gh-harness --version 0.1.1 --tool-path $toolDirectory --add-source $packageDirectory --ignore-failed-sources
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $toolName = if ($IsWindows) { 'gh-harness.exe' } else { 'gh-harness' }
           & (Join-Path $toolDirectory $toolName) --explain help

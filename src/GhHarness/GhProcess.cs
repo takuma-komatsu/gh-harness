@@ -6,6 +6,8 @@ namespace GhHarness;
 /// <summary>Starts the real GitHub CLI with the original argument boundaries intact.</summary>
 public static class GhProcess
 {
+    internal const string RecursionGuardEnvironmentVariable = "GH_HARNESS_RECURSION_GUARD";
+
     public static string? FindExecutable(string? path = null)
     {
         path ??= Environment.GetEnvironmentVariable("PATH");
@@ -56,6 +58,7 @@ public static class GhProcess
             else
                 startInfo.Environment[name] = value;
         }
+        startInfo.Environment[RecursionGuardEnvironmentVariable] = "1";
 
         using var process = new Process { StartInfo = startInfo };
         if (!process.Start())

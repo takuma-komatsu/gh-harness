@@ -9,6 +9,12 @@ public static class Program
 {
     public static async Task<int> Main(string[] args)
     {
+        if (Environment.GetEnvironmentVariable(GhProcess.RecursionGuardEnvironmentVariable) is not null)
+        {
+            Console.Error.WriteLine("gh-harness: recursive invocation detected: gh on PATH invoked gh-harness again");
+            return 2;
+        }
+
         var explain = args.Length > 0 && args[0] == "--explain";
         var ghArguments = explain ? args[1..] : args;
         if (ghArguments.Length == 0)

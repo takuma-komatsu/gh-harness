@@ -96,6 +96,20 @@ public sealed class PatProfileStoreTests
         Assert.True(allowed.Allowed);
     }
 
+    [Fact]
+    public async Task CredentialLookupMarksChildAsHarnessInvocation()
+    {
+        if (OperatingSystem.IsWindows()) return;
+        using var fixture = new Fixture();
+        var gh = Path.Combine(fixture.Home, "gh");
+        File.WriteAllText(gh, "#!/bin/sh\nprintf '%s' \"$GH_HARNESS_RECURSION_GUARD\"\n");
+        File.SetUnixFileMode(gh, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+
+        var binding = await CredentialBinding.ResolveAsync(gh, new Dictionary<string, string?>());
+
+        Assert.NotNull(binding);
+    }
+
     private static TargetRequirement Repo(string name, string category, string level, string? group = null) =>
         new(new TargetId("github.com", "repository", name), new PermissionKey("repository", category), level, group);
 

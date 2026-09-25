@@ -7,7 +7,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>gh-harness</ToolCommandName>
     <PackageId>gh-harness</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>gh-harness contributors</Authors>
     <Description>A policy-gated wrapper for GitHub CLI commands.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>

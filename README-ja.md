@@ -6,13 +6,13 @@
 
 ## `gh` 拡張コマンドとしてインストール
 
-GitHub CLI をインストールしてください。実行ファイルを含む Release が公開された後は、GitHub から拡張コマンドをインストールできます。
+GitHub CLI をインストールし、GitHub から拡張コマンドをインストールします。
 
 ```sh
 gh extension install takuma-komatsu/gh-harness
 ```
 
-Release の実行ファイルは .NET ランタイムを同梱するため、この方法では .NET SDK やランタイムの別途インストールは不要です。Release ワークフローは Windows、macOS、Linux の x64 と ARM64 向けにビルドします。最初の対応 Release が公開されるまでは、macOS と Linux ではローカル拡張コマンド、Windows では .NET ツールを使用してください。
+Release の実行ファイルは .NET ランタイムを同梱するため、この方法では .NET SDK やランタイムの別途インストールは不要です。Release ワークフローは Windows、macOS、Linux の x64 と ARM64 向けにビルドします。
 
 macOS と Linux のローカルチェックアウトでは、.NET 10 SDK をインストールしてから次を実行します。
 
@@ -35,7 +35,7 @@ macOS と Linux のローカル拡張コマンドは、`dotnet run` でチェッ
 
 ```sh
 dotnet pack src/GhHarness/GhHarness.csproj -c Release -o ./artifacts
-dotnet tool install --global gh-harness --version 0.1.0 --add-source ./artifacts
+dotnet tool install --global gh-harness --version 0.1.1 --add-source ./artifacts
 ```
 
 通常の対話シェルで `gh` を置き換えるには、bash/zsh の起動ファイルに次を追加します。
@@ -55,6 +55,7 @@ function gh { & gh-harness @args }
 Windows では、`gh.exe harness ...` でこの関数を回避して拡張コマンドを呼び出せます。
 
 `gh-harness` は PATH 上の実体 `gh` を絶対パスで起動します。エイリアスはシェル内だけで有効です。実体 `gh`、別の GitHub API クライアント、スクリプト内の直接呼び出しを強制的に遮断するセキュリティ境界ではありません。
+PATH 上の `gh` が再び `gh-harness` を呼ぶ構成では、再帰実行を停止します。
 
 `gh api` の権限判定は指定された最初の URL に対して行います。GitHub が別リポジトリへリダイレクトを返し、実体の `gh api` がそれを追った場合、移動先のリポジトリは再評価されません。例と詳細は[権限対応表の制約](docs/permission-matrix-ja.md#現在の範囲と追加時の手順)を参照してください。
 
